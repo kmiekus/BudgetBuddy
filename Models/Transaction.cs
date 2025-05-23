@@ -17,7 +17,7 @@ namespace BudgetBuddy.Models;
 public record Transaction
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-  
+
     [Required(ErrorMessage = "Nazwa jest wymagana")]
     public required string Name { get; set; }
 
@@ -27,4 +27,10 @@ public record Transaction
     public required TransactionType Type { get; set; }
 
     public DateTime Date { get; init; } = DateTime.Now;
+}
+
+public enum TransactionType
+{
+    Income,
+    Expense
 }

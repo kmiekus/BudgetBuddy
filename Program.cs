@@ -8,7 +8,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddDbContext<BudgetDbContext>(options =>
     options.UseSqlite("Data Source=budget.db"));
