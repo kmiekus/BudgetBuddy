@@ -1,4 +1,5 @@
 using BudgetBuddy.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +9,10 @@ builder.Services.AddServerSideBlazor();
 
 
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddSingleton<ITransactionService, TransactionService>();
-
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddDbContext<BudgetDbContext>(options =>
+    options.UseSqlite("Data Source=budget.db"));
+    
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

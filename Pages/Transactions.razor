@@ -78,19 +78,19 @@ else
         Type = TransactionType.Expense
     };
 
-    private List<Transaction> transactions = [];
+    private IEnumerable<Transaction> transactions = [];
 
-    private void OnSubmit()
+    private async Task OnSubmit()
     {
         var newTransaction = transactionInput with { Id = Guid.NewGuid(), Date = DateTime.Now };
-        TransactionService.Add(newTransaction);
+        await TransactionService.AddAsync(newTransaction);
 
         transactionInput = transactionInput with { Name = "", Amount = 0 };
-        transactions = TransactionService.GetAll().ToList();
+        transactions = await TransactionService.GetAll();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        transactions = TransactionService.GetAll().ToList();
+        transactions = (await TransactionService.GetAll()).ToList();
     }
 }

@@ -1,29 +1,48 @@
 using BudgetBuddy.Models;
 
+using Microsoft.EntityFrameworkCore;
 namespace BudgetBuddy.Data;
 
 public interface ITransactionService
 {
-    void Add(Transaction transaction);
-    void Remove(Transaction transaction);
-    IEnumerable<Transaction> GetAll();
+    Task AddAsync(Transaction transaction);
+    Task RemoveAsync(Transaction transaction);
+    Task<IEnumerable<Transaction>> GetAll();
     decimal GetTotalByType(TransactionType type);
     string GetSummary();
 }
 
 public class TransactionService : ITransactionService
 {
-    private readonly List<Transaction> _transactions = [];
+    private readonly BudgetDbContext _context;
 
-    public void Add(Transaction transaction) => _transactions.Add(transaction);
+    public TransactionService(BudgetDbContext context)
+    {
+        _context = context;
+    }
 
-    public void Remove(Transaction transaction) => _transactions.Remove(transaction);
+    public async Task AddAsync(Transaction transaction)
+    {
+        await _context.Set<Transaction>().AddAsync(transaction);
+        await _context.SaveChangesAsync();
+    }
 
-    public IEnumerable<Transaction> GetAll()
-        => _transactions.OrderByDescending(t => t.Date);
+    public async Task RemoveAsync(Transaction transaction) => await RemoveAsync(transaction.Id);
+    public async Task RemoveAsync(Guid id)
+    {
+        var transaction = await _context.Set<Transaction>().FindAsync(id);
+        if (transaction != null)
+        {
+            _context.Set<Transaction>().Remove(transaction);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<IEnumerable<Transaction>> GetAll()
+        => await _context.Set<Transaction>().OrderByDescending(t => t.Date).ToListAsync();
 
     public decimal GetTotalByType(TransactionType type)
-        => _transactions
+        => _context.Set<Transaction>()
             .Where(t => t.Type == type)
             .Sum(t => t.Amount);
 
