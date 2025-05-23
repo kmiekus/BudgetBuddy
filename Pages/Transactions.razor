@@ -1,0 +1,96 @@
+@page "/transactions"
+@using BudgetBuddy.Data
+@using BudgetBuddy.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject ITransactionService TransactionService
+
+<h3>Transakcje</h3>
+
+<EditForm Model="@transactionInput" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-2">
+        <label>Opis:</label>
+        <InputText @bind-Value="transactionInput.Name" class="form-control"> </InputText>
+    </div>
+    <div class="mb-2">
+        <label>Kwota:</label>
+        <InputNumber @bind-Value="transactionInput.Amount" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>Typ:</label>
+        <InputSelect @bind-Value="transactionInput.Type" class="form-control">
+            <option value="@TransactionType.Income">Przychód</option>
+            <option value="@TransactionType.Expense">Wydatek</option>
+        </InputSelect>
+    </div>
+
+
+    <button class="btn btn-primary">Dodaj</button>
+</EditForm>
+
+
+
+<hr />
+
+<h5>Podsumowanie: @TransactionService.GetSummary()</h5>
+
+@if (transactions.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Opis</th>
+                <th>Kwota</th>
+                <th>Typ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in transactions)
+            {
+                <tr>
+                    <td>@t.Date.ToShortDateString()</td>
+                    <td>@t.Name</td>
+                    <td class="@(t.Type switch {
+                        TransactionType.Income => "text-success",
+                        TransactionType.Expense => "text-danger",
+                        _ => ""
+                    })">
+                        @t.Amount.ToString("C")
+                    </td>
+                    <td>@(t.Type == TransactionType.Income ? "Przychód" : "Wydatek")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Brak transakcji.</p>
+}
+
+@code {
+    private Transaction transactionInput = new()
+    {
+        Name = string.Empty,
+        Amount = 0,
+        Type = TransactionType.Expense
+    };
+
+    private List<Transaction> transactions = [];
+
+    private void OnSubmit()
+    {
+        var newTransaction = transactionInput with { Id = Guid.NewGuid(), Date = DateTime.Now };
+        TransactionService.Add(newTransaction);
+
+        transactionInput = transactionInput with { Name = "", Amount = 0 };
+        transactions = TransactionService.GetAll().ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        transactions = TransactionService.GetAll().ToList();
+    }
+}
