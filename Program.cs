@@ -10,7 +10,8 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddDbContext<BudgetDbContext>(options =>
-    options.UseSqlite("Data Source=budget.db"));
+    //options.UseSqlite("Data Source=budget.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
     
 var app = builder.Build();
 

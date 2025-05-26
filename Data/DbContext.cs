@@ -17,6 +17,10 @@ namespace BudgetBuddy.Data
         {
             base.OnModelCreating(modelBuilder);
             // Add your model configurations here
+
+            modelBuilder.Entity<Transaction>()
+            .Property(t => t.Amount)
+            .HasPrecision(18, 2);
         }
     }
 }
