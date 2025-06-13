@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# Local settings
+appsettings.Local.json
+
 # SQLite
 *.db
 *.db-shm
