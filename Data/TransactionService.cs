@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BudgetBuddy.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,9 @@ public interface ITransactionService
 {
     Task AddAsync(Transaction transaction);
     Task RemoveAsync(Transaction transaction);
-    Task<IEnumerable<Transaction>> GetAll();
-    decimal GetTotalByType(TransactionType type);
-    string GetSummary();
+    Task<IEnumerable<Transaction>> GetAllAsync();
+    Task<decimal> GetTotalByTypeAsync(TransactionType type);
+    Task<string> GetSummaryAsync();
 }
 
 public class TransactionService : ITransactionService
@@ -38,18 +39,18 @@ public class TransactionService : ITransactionService
         }
     }
 
-    public async Task<IEnumerable<Transaction>> GetAll()
+    public async Task<IEnumerable<Transaction>> GetAllAsync()
         => await _context.Set<Transaction>().OrderByDescending(t => t.Date).ToListAsync();
 
-    public decimal GetTotalByType(TransactionType type)
-        => _context.Set<Transaction>()
+    public async Task<decimal> GetTotalByTypeAsync(TransactionType type)
+        => await _context.Set<Transaction>()
             .Where(t => t.Type == type)
-            .Sum(t => t.Amount);
+            .SumAsync(t => t.Amount);
 
-    public string GetSummary()
+    public async Task<string> GetSummaryAsync()
     {
-        var totalIncome = GetTotalByType(TransactionType.Income);
-        var totalExpense = GetTotalByType(TransactionType.Expense);
+        var totalIncome = await GetTotalByTypeAsync(TransactionType.Income);
+        var totalExpense = await GetTotalByTypeAsync(TransactionType.Expense);
         var balance = totalIncome - totalExpense;
 
         return balance switch

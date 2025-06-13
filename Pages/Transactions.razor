@@ -34,7 +34,7 @@
 
 <hr />
 
-<h5>Podsumowanie: @TransactionService.GetSummary()</h5>
+<h5>Podsumowanie: @summary</h5>
 
 @if (transactions.Any())
 {
@@ -80,6 +80,7 @@ else
     };
 
     private IEnumerable<Transaction> transactions = [];
+    private string? summary;
 
     private async Task OnSubmit()
     {
@@ -87,11 +88,12 @@ else
         await TransactionService.AddAsync(newTransaction);
 
         transactionInput = transactionInput with { Name = "", Amount = 0 };
-        transactions = await TransactionService.GetAll();
+        transactions = await TransactionService.GetAllAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        transactions = (await TransactionService.GetAll()).ToList();
+        transactions = (await TransactionService.GetAllAsync()).ToList();
+        summary = await TransactionService.GetSummaryAsync();
     }
 }
