@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @inject ITransactionService TransactionService
+@inject IAiService AiService
 
 <h3>Transakcje</h3>
 
@@ -95,5 +96,20 @@ else
     {
         transactions = (await TransactionService.GetAllAsync()).ToList();
         summary = await TransactionService.GetSummaryAsync();
+    }
+}
+
+<input @bind="userPrompt" placeholder="Zadaj pytanie o budżet..." />
+<button @onclick="SendToAi">Wyślij</button>
+
+<p>@response</p>
+
+@code {
+    string userPrompt;
+    string response;
+
+    async Task SendToAi()
+    {
+        response = await AiService.AskAsync(userPrompt);
     }
 }
