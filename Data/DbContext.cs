@@ -3,12 +3,8 @@ using BudgetBuddy.Models;
 
 namespace BudgetBuddy.Data
 {
-    public class BudgetDbContext : Microsoft.EntityFrameworkCore.DbContext
+    public class BudgetDbContext(DbContextOptions<BudgetDbContext> options) : DbContext(options)
     {
-        public BudgetDbContext(DbContextOptions<BudgetDbContext> options)
-            : base(options)
-        {
-        }
 
         // Add your DbSet properties here, for example:
         public DbSet<Transaction> Transactions { get; set; }
