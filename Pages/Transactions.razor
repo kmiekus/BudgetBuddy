@@ -99,17 +99,20 @@ else
     }
 }
 
-<input @bind="userPrompt" placeholder="Zadaj pytanie o budżet..." />
+<h4>Finansowy asystent AI</h4>
+<Chat Transactions="@transactions"/>
+
+@* <input @bind="userPrompt" placeholder="Zadaj pytanie o budżet..." />
 <button @onclick="SendToAi">Wyślij</button>
 
-<p>@response</p>
+<p>@response</p> *@
 
-@code {
-    string userPrompt;
-    string response;
+@* @code {
+    string userPrompt = string.Empty;
+    string response = string.Empty;
 
     async Task SendToAi()
     {
         response = await AiService.AskAsync(userPrompt);
     }
-}
+} *@
